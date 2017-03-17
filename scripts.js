@@ -168,12 +168,19 @@ board.drawPieces();
 
 
 
-canvas.addEventListener("mouseup",getPosition,false);
-canvas.addEventListener("mousedown",movePiece,true);
+canvas.addEventListener("click",getPosition,false);
+//canvas.addEventListener("mousedown",movePiece,true);
 
 
   var activeSpace;
   var activePiece;
+  var clickCount = 0;
+  var moveLocations = {
+    'rowFrom': 0,
+    'columnFrom':0,
+    'rowTo':0,
+    'columnTo':0
+  }
 
 
 function getPosition(event) {
@@ -198,37 +205,62 @@ function getPosition(event) {
   ey = Math.floor((ey - canvas.offsetTop)/(canvas.width/8)); 
   ex = Math.floor((ex - canvas.offsetLeft)/(canvas.height/8));
 
-  activeSpace = board.grid[ey][ex];
+  
+  console.log("Got Posistion and it eqyals ey =" + ey + " ex =" + ex);
+  clickCount++;
+  console.log(clickCount);
+  if(clickCount == 1){
+    moveLocations.rowFrom = ey;
+    moveLocations.columnFrom = ex;
+    activeSpace = board.grid[ey][ex];
 
   activePiece = board.pieces[activeSpace.hasPiece()];
   activeSpace.highlight(ctx);
-  console.log("Got Posistion and it eqyals ey =" + ey + " ex =" + ex);
+  }
+  if(clickCount == 2){
+    moveLocations.rowTo = ey;
+    moveLocations.columnTo = ex;
+    clickCount = 0;
+    movePiece(moveLocations);
+    activePiece == null;
+    activeSpace == null;
+  }
+  console.log(moveLocations);
+}
+
+function movePiece(moveLocations){
+  for(var i = 0; i < pieces.length; i++){
+    if(pieces[i].row == moveLocations.rowFrom && pieces[i].column == moveLocations.columnFrom){
+      pieces[i].row = moveLocations.rowTo;
+      pieces[i].column = moveLocations.columnTo;
+    }
+  }
+  board.drawPieces();
 }
 //}
-function movePiece(event) {
-  console.log("Calling movePiece!");
-    if(activePiece!=undefined) {
-      var my; 
-      var mx; 
-      var blockX; 
-      var blockY;
-    }
-    if(event.pageX!=undefined && event.pageY!=undefined) {
-      my = event.pageY; mx = event.pageX;
-    } 
-    else {
-      my = event.clientY+document.body.scrollTop+document.documentElement.scrollTop;
-      mx = event.clientX+document.body.scrollLeft+document.documentElement.scrollLeft;
-    }
-    console.log("Going through if/else statements")
-    my -= canvas.offsetTop; 
-    mx -= canvas.offsetLeft;
-    blockY = Math.floor(my/(canvas.width/8)); 
-    blockX = Math.floor(mx/(canvas.height/8));
+// function movePiece(event) {
+//   console.log("Calling movePiece!");
+//     if(activePiece!=undefined) {
+//       var my; 
+//       var mx; 
+//       var blockX; 
+//       var blockY;
+//     }
+//     if(event.pageX!=undefined && event.pageY!=undefined) {
+//       my = event.pageY; mx = event.pageX;
+//     } 
+//     else {
+//       my = event.clientY+document.body.scrollTop+document.documentElement.scrollTop;
+//       mx = event.clientX+document.body.scrollLeft+document.documentElement.scrollLeft;
+//     }
+//     console.log("Going through if/else statements")
+//     my -= canvas.offsetTop; 
+//     mx -= canvas.offsetLeft;
+//     blockY = Math.floor(my/(canvas.width/8)); 
+//     blockX = Math.floor(mx/(canvas.height/8));
 
-    console.log("Getting before move");
-    activePiece.move(board.grid[blockY][blockX]);
-
-    //activeSpace.reDraw();
-}
+//     console.log("Getting before move");
+//     activePiece.move(board.grid[blockY][blockX]);
+//     activeSpace.reDraw();
+// }
 
