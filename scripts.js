@@ -1,11 +1,11 @@
 var canvas = document.getElementById('board');
+
 canvas.width = 400;
 canvas.height = 400;
 var blockSize = canvas.height/8;
 var ctx = canvas.getContext('2d');
-var url = "localhost:8080/board";
 
-var pieces = get("localhost:8080/board");
+var pieces = JSON.parse(readJSON("piecesredo.json"));
 
 var black = new Image();
 black.src = './assets/blackChip.png';
@@ -19,11 +19,12 @@ red.src = './assets/redChip.png';
 var redKing = new Image();
 redKing.src = './assets/redKing.png';
 
-function get(url){
+function readJSON(file){
     var request = new XMLHttpRequest();
-    request.open('GET', url);
+    request.open('GET', file, false);
+    request.send(null);
     if(request.status == 200){
-      console.log(request.responseText);
+        console.log(request.responseText);
         return request.responseText;
     }
 }
@@ -164,11 +165,11 @@ function Board() {
 var board = new Board();
 board.drawGrid();
 board.drawPieces();
-console.log(pieces);
+
 
 
 canvas.addEventListener("mouseup",getPosition,false);
-canvas.addEventListener("mousedown",movePiece,false);
+canvas.addEventListener("mousedown",movePiece,true);
 
 
   var activeSpace;
@@ -201,23 +202,33 @@ function getPosition(event) {
 
   activePiece = board.pieces[activeSpace.hasPiece()];
   activeSpace.highlight(ctx);
+  console.log("Got Posistion and it eqyals ey =" + ey + " ex =" + ex);
 }
 //}
 function movePiece(event) {
-  if(activePiece!=undefined) {
-    var my; var mx; var blockX; var blockY;
+  console.log("Calling movePiece!");
+    if(activePiece!=undefined) {
+      var my; 
+      var mx; 
+      var blockX; 
+      var blockY;
+    }
     if(event.pageX!=undefined && event.pageY!=undefined) {
       my = event.pageY; mx = event.pageX;
-    } else {
+    } 
+    else {
       my = event.clientY+document.body.scrollTop+document.documentElement.scrollTop;
       mx = event.clientX+document.body.scrollLeft+document.documentElement.scrollLeft;
     }
-    my -= canvas.offsetTop; mx -= canvas.offsetLeft;
-    blockY = Math.floor(my/(canvas.width/8)); blockX = Math.floor(mx/(canvas.height/8));
+    console.log("Going through if/else statements")
+    my -= canvas.offsetTop; 
+    mx -= canvas.offsetLeft;
+    blockY = Math.floor(my/(canvas.width/8)); 
+    blockX = Math.floor(mx/(canvas.height/8));
 
     console.log("Getting before move");
     activePiece.move(board.grid[blockY][blockX]);
-    activeSpace.reDraw();
-  }
+
+    //activeSpace.reDraw();
 }
 
