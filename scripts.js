@@ -5,7 +5,7 @@ canvas.height = 400;
 var blockSize = canvas.height/8;
 var ctx = canvas.getContext('2d');
 
-var pieces = JSON.parse(readJSON("piecesredo.json"));
+var pieces = JSON.parse(readJSON("http://localhost:8080/board"));
 
 var black = new Image();
 black.src = './assets/blackChip.png';
@@ -24,9 +24,19 @@ function readJSON(file){
     request.open('GET', file, false);
     request.send(null);
     if(request.status == 200){
-        console.log(request.responseText);
         return request.responseText;
     }
+}
+
+function sendUpdatedJSON(){
+  var request = new XMLHttpRequest();
+  request.open('POST',"http://localhost:8080/board/moveRequest",false);
+  request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+  request.send(pieces);
+  if(request.status == 200){
+    console.log("Response Recieved");
+    return request.responseText;
+  }
 }
 
 function Piece() {
@@ -224,6 +234,8 @@ function getPosition(event) {
     movePiece(moveLocations);
     activePiece == null;
     activeSpace == null;
+    pieces = sendUpdatedJSON();
+    board.drawPieces();
   }
   console.log(moveLocations);
 }
